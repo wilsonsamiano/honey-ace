@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Coffee, Flame, Gauge, Heart, Maximize2, Minimize2, Pause, Rocket, Shield, Users } from "lucide-react";
+import { Coffee, Copy, Flame, Gauge, Heart, Maximize2, MessageCircle, Minimize2, Pause, Rocket, Share2, Shield, Users } from "lucide-react";
 import { bindInput, bindMenuTaps } from "@/game/input";
 import { startMusic, stopMusic, unlockAudio, sfx } from "@/game/audio";
 import { UiButton } from "./usePress";
@@ -326,7 +326,7 @@ function Overlay({
         <UpgradeCard stats={stats} twins={twins} level={level} motif={motif} onPick={pick} />
       )}
       {(phase === "gameover" || phase === "victory") && (
-        <EndCard title="Shot down" score={score} best={best} onAgain={begin} />
+        <EndCard title="Shot down" score={score} best={best} level={level} onAgain={begin} />
       )}
     </div>
   );
@@ -523,28 +523,138 @@ function RankPips({
   );
 }
 
+function shareBits(score: number, best: number, level: number, rank: string) {
+  const text = `I scored ${score.toLocaleString()} on Honey Ace (${rank}) — Stage ${level}. High score ${best.toLocaleString()}. Think you can beat Bumble?`;
+  const url = typeof window === "undefined" ? "https://github.com/wilsonsamiano/honey-ace" : window.location.href.split("#")[0];
+  return { text, url, full: `${text} ${url}` };
+}
+
 function EndCard({
   title,
   score,
   best,
+  level,
   onAgain,
 }: {
   title: string;
   score: number;
   best: number;
+  level: number;
   onAgain: () => void;
 }) {
+  const difficulty = useGameStore((s) => s.difficulty);
+  const rank = DIFFICULTIES.find((d) => d.id === difficulty)?.title ?? "Normal";
+  const [copied, setCopied] = useState(false);
+
+  async function shareNative() {
+    const { text, url, full } = shareBits(score, best, level, rank);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Honey Ace", text, url });
+        return;
+      }
+    } catch (err) {
+      if ((err as DOMException).name === "AbortError") return;
+    }
+    await copyShare(full);
+  }
+
+  async function copyShare(value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      /* ignore */
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  function openShare(href: string, extra?: string) {
+    if (extra) void copyShare(extra);
+    window.open(href, "_blank", "noopener,noreferrer");
+  }
+
+  const { text, url, full } = shareBits(score, best, level, rank);
+  const encoded = encodeURIComponent(full);
+  const encodedUrl = encodeURIComponent(url);
+
   return (
-    <div className="w-full max-w-[280px] rounded-lg bg-paper p-5 text-center shadow-panel ring-1 ring-line">
+    <div className="w-full max-w-[320px] rounded-lg bg-paper p-5 text-center shadow-panel ring-1 ring-line">
       <h2 className="font-display text-3xl font-semibold">{title}</h2>
-      <p className="mt-2 font-display text-2xl font-semibold tabular-nums">{score}</p>
-      <p className="text-xs font-bold tracking-wide text-muted uppercase">Best {best}</p>
+      <p className="mt-2 font-display text-2xl font-semibold tabular-nums">{score.toLocaleString()}</p>
+      <p className="mt-1 text-xs font-bold tracking-wide text-muted uppercase">
+        {rank} · Stage {level} · Best {best.toLocaleString()}
+      </p>
       <UiButton
         onPress={onAgain}
         className="mt-4 h-11 w-full rounded-md bg-cherry text-sm font-bold text-paper transition-transform duration-150 hover:brightness-105 active:scale-[0.98]"
       >
         Fly again
       </UiButton>
+      <p className="mt-3 text-xs font-bold tracking-wide text-muted uppercase">Share this run</p>
+      <div className="mt-2 grid grid-cols-3 gap-1.5">
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => void shareNative()}
+          className="flex min-h-11 items-center justify-center gap-1 rounded-md bg-cherry px-1 text-xs font-bold text-paper"
+        >
+          <Share2 className="size-3.5" strokeWidth={2.4} />
+          Share
+        </button>
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => openShare(`https://twitter.com/intent/tweet?text=${encoded}`)}
+          className="flex min-h-11 items-center justify-center rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+        >
+          X
+        </button>
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => openShare(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodeURIComponent(text)}`)}
+          className="flex min-h-11 items-center justify-center rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+        >
+          Facebook
+        </button>
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => openShare("https://www.instagram.com/", full)}
+          className="flex min-h-11 items-center justify-center rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+        >
+          Instagram
+        </button>
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => openShare("https://www.tiktok.com/", full)}
+          className="flex min-h-11 items-center justify-center rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+        >
+          TikTok
+        </button>
+        <button
+          type="button"
+          data-ui="share"
+          onClick={() => {
+            window.location.href = `sms:?&body=${encoded}`;
+          }}
+          className="flex min-h-11 items-center justify-center gap-1 rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+        >
+          <MessageCircle className="size-3.5" strokeWidth={2.4} />
+          Text
+        </button>
+      </div>
+      <button
+        type="button"
+        data-ui="share"
+        onClick={() => void copyShare(full)}
+        className="mt-1.5 flex min-h-11 w-full items-center justify-center gap-1 rounded-md bg-sky/40 text-xs font-bold ring-1 ring-line"
+      >
+        <Copy className="size-3.5" strokeWidth={2.4} />
+        {copied ? "Copied score" : "Copy score"}
+      </button>
     </div>
   );
 }

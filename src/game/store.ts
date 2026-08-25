@@ -54,6 +54,12 @@ export function nextBlurb(id: UpgradeId, stats: Stats, twins: number): string {
   return "Even zipper. Missiles snap to targets.";
 }
 
+export function scoreMult(id: Difficulty) {
+  if (id === "easy") return 0.5;
+  if (id === "hard") return 2;
+  return 1;
+}
+
 export function atCap(id: UpgradeId, stats: Stats, twins: number) {
   if (id === "twin") return twins >= TWIN_MAX;
   return stats[id] >= CAPS[id];
@@ -64,9 +70,9 @@ export const DIFFICULTIES: {
   title: string;
   blurb: string;
 }[] = [
-  { id: "easy", title: "Easy", blurb: "Kids' cabinet. Extra hull." },
+  { id: "easy", title: "Easy", blurb: "Kids' cabinet. Extra hull. Half score." },
   { id: "normal", title: "Normal", blurb: "The neighborhood arcade." },
-  { id: "hard", title: "Hard", blurb: "Busy skies. Bring a friend." },
+  { id: "hard", title: "Hard", blurb: "Busy skies. Double score." },
 ];
 
 const BEST_KEY = "honey-ace-best";
@@ -218,7 +224,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     set({ phase });
   },
-  bumpScore: (n) => set({ score: get().score + n }),
+  bumpScore: (n) => {
+    const add = Math.round(n * scoreMult(get().difficulty));
+    set({ score: get().score + add });
+  },
   hitPlayer: () => {
     const hp = get().hp - 1;
     set({ hp });
