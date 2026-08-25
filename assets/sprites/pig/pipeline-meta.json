@@ -1,0 +1,175 @@
+{
+  "target": "asset",
+  "mode": "hover",
+  "prompt": "",
+  "role": "",
+  "input": "/workspace/assets/sprites/pig-raw.jpg",
+  "threshold": 100,
+  "edge_threshold": 150,
+  "duration": 200,
+  "rows": 2,
+  "cols": 2,
+  "cell_size": 128,
+  "fit_scale": 0.85,
+  "trim_border": 4,
+  "edge_clean_depth": 3,
+  "align": "center",
+  "shared_scale": true,
+  "component_mode": "largest",
+  "component_padding": 0,
+  "min_component_area": 1,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "hover-1",
+    "hover-2",
+    "hover-3",
+    "hover-4"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        704,
+        704
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 122916,
+      "selected_component_bbox": [
+        117,
+        139,
+        597,
+        559
+      ],
+      "crop_bbox": [
+        117,
+        139,
+        597,
+        559
+      ],
+      "edge_touch": false,
+      "output_size": [
+        102,
+        89
+      ],
+      "paste_position": [
+        13,
+        19
+      ]
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        704,
+        0,
+        1408,
+        704
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 123119,
+      "selected_component_bbox": [
+        121,
+        142,
+        563,
+        564
+      ],
+      "crop_bbox": [
+        121,
+        142,
+        563,
+        564
+      ],
+      "edge_touch": false,
+      "output_size": [
+        93,
+        89
+      ],
+      "paste_position": [
+        17,
+        19
+      ]
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        704,
+        704,
+        1408
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 118612,
+      "selected_component_bbox": [
+        97,
+        98,
+        609,
+        516
+      ],
+      "crop_bbox": [
+        97,
+        98,
+        609,
+        516
+      ],
+      "edge_touch": false,
+      "output_size": [
+        108,
+        88
+      ],
+      "paste_position": [
+        10,
+        20
+      ]
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        704,
+        704,
+        1408,
+        1408
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 113017,
+      "selected_component_bbox": [
+        135,
+        99,
+        578,
+        520
+      ],
+      "crop_bbox": [
+        135,
+        99,
+        578,
+        520
+      ],
+      "edge_touch": false,
+      "output_size": [
+        94,
+        89
+      ],
+      "paste_position": [
+        17,
+        19
+      ]
+    }
+  ],
+  "edge_touch_frames": []
+}
