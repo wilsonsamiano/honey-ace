@@ -119,6 +119,7 @@ type GameStore = {
   best: number;
   hp: number;
   maxHp: number;
+  spareHearts: number;
   stats: Stats;
   runSeed: number;
   seedCode: string;
@@ -138,6 +139,8 @@ type GameStore = {
   bumpScore: (n: number) => void;
   hitPlayer: () => boolean;
   heal: (n: number) => void;
+  bankHearts: (n: number) => void;
+  applySpareHearts: () => void;
   loseTwin: () => void;
   setDifficulty: (id: Difficulty) => void;
   setBoss: (name: string, hp: number, max: number) => void;
@@ -157,6 +160,12 @@ export function maxHpFrom(stats: Stats, difficulty: Difficulty = "normal") {
   return baseHp(difficulty) + stats.shields;
 }
 
+function fillFromSpare(hp: number, maxHp: number, spare: number) {
+  const room = Math.max(0, maxHp - hp);
+  const used = Math.min(room, Math.max(0, spare));
+  return { hp: hp + used, spare: Math.max(0, spare) - used };
+}
+
 export const useGameStore = create<GameStore>((set, get) => ({
   phase: "menu",
   level: 1,
@@ -164,6 +173,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   best: 0,
   hp: 3,
   maxHp: 3,
+  spareHearts: 0,
   stats: { firepower: 1, missiles: 0, shields: 0, speed: 1 },
   runSeed: 1,
   seedCode: "000001",
@@ -187,6 +197,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       score: 0,
       hp: maxHp,
       maxHp,
+      spareHearts: 0,
       stats,
       best: readBest(),
       runSeed,
@@ -203,15 +214,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   applyUpgrade: (id) => {
     const keptHp = get().hp;
+    const spare = get().spareHearts;
     if (id === "twin") {
-      set({ twins: Math.min(TWIN_MAX, get().twins + 1), phase: "playing", level: get().level + 1, hp: keptHp });
+      const filled = fillFromSpare(keptHp, get().maxHp, spare);
+      set({
+        twins: Math.min(TWIN_MAX, get().twins + 1),
+        phase: "playing",
+        level: get().level + 1,
+        hp: filled.hp,
+        spareHearts: filled.spare,
+      });
       return;
     }
     const cur = get().stats[id];
     const stats = { ...get().stats, [id]: Math.min(CAPS[id], cur + 1) };
     const maxHp = maxHpFrom(stats, get().difficulty);
-    const hp = id === "shields" ? Math.min(maxHp, keptHp + 2) : Math.min(maxHp, keptHp);
-    set({ stats, maxHp, hp, phase: "playing", level: get().level + 1 });
+    const afterUpgrade = id === "shields" ? Math.min(maxHp, keptHp + 2) : Math.min(maxHp, keptHp);
+    const filled = fillFromSpare(afterUpgrade, maxHp, spare);
+    set({ stats, maxHp, hp: filled.hp, spareHearts: filled.spare, phase: "playing", level: get().level + 1 });
   },
   setHud: (patch) => set(patch),
   setPhase: (phase) => {
@@ -238,7 +258,24 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
     return false;
   },
-  heal: (n) => set({ hp: Math.min(get().maxHp, get().hp + n) }),
+  heal: (n) => {
+    if (n <= 0) return;
+    const { hp, maxHp, spareHearts } = get();
+    const room = Math.max(0, maxHp - hp);
+    const used = Math.min(room, n);
+    const extra = n - used;
+    set({ hp: hp + used, spareHearts: spareHearts + extra });
+  },
+  bankHearts: (n) => {
+    if (n <= 0) return;
+    get().heal(n);
+  },
+  applySpareHearts: () => {
+    const { hp, maxHp, spareHearts } = get();
+    const filled = fillFromSpare(hp, maxHp, spareHearts);
+    if (filled.hp === hp && filled.spare === spareHearts) return;
+    set({ hp: filled.hp, spareHearts: filled.spare });
+  },
   loseTwin: () => set({ twins: 0 }),
   setDifficulty: (id) => {
     writeDifficulty(id);
@@ -258,6 +295,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({
       phase: "menu",
       twins: 0,
+      spareHearts: 0,
       bossName: "",
       bossHp: 0,
       bossMax: 0,
