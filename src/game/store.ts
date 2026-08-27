@@ -202,14 +202,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
   applyUpgrade: (id) => {
+    const keptHp = get().hp;
     if (id === "twin") {
-      set({ twins: Math.min(TWIN_MAX, get().twins + 1), phase: "playing", level: get().level + 1 });
+      set({ twins: Math.min(TWIN_MAX, get().twins + 1), phase: "playing", level: get().level + 1, hp: keptHp });
       return;
     }
     const cur = get().stats[id];
     const stats = { ...get().stats, [id]: Math.min(CAPS[id], cur + 1) };
     const maxHp = maxHpFrom(stats, get().difficulty);
-    const hp = id === "shields" ? Math.min(maxHp, get().hp + 2) : Math.min(maxHp, get().hp);
+    const hp = id === "shields" ? Math.min(maxHp, keptHp + 2) : Math.min(maxHp, keptHp);
     set({ stats, maxHp, hp, phase: "playing", level: get().level + 1 });
   },
   setHud: (patch) => set(patch),
