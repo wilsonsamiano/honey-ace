@@ -4,12 +4,18 @@ A cute TwinBee-style shoot ’em up. Fly Bumble, pick Easy / Normal / Hard, leve
 
 ## Play
 
+**[Play Honey Ace](https://honey-ace.grok.me)**
+
+Open that link on a phone, tablet, or desktop. Touch or mouse to fly. Auto-fire. Esc or P pauses. Share your score from the game-over screen.
+
+## Source
+
+This repo: [github.com/wilsonsamiano/honey-ace](https://github.com/wilsonsamiano/honey-ace)
+
 ```bash
 npm install
 npm run dev
 ```
-
-Open the URL the script prints (port 8080). Touch or mouse to fly. Auto-fire. Esc or P pauses.
 
 ## Build
 
