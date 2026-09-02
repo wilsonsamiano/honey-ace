@@ -1,24 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { Coffee, Copy, Flame, Gauge, Github, Heart, Maximize2, MessageCircle, Minimize2, Pause, Rocket, Share2, Shield, Users } from "lucide-react";
+import { Maximize2, Minimize2, Pause } from "lucide-react";
 import { bindInput, bindMenuTaps } from "@/game/input";
 import { startMusic, stopMusic, unlockAudio, sfx } from "@/game/audio";
 import { UiButton } from "./usePress";
-import {
-  hydrateBest,
-  atCap,
-  DIFFICULTIES,
-  nextBlurb,
-  UPGRADES,
-  useGameStore,
-  type Difficulty,
-  type Stats,
-  type UpgradeId,
-} from "@/game/store";
+import { HeaderBar, ScoreChip, StageChip, BossBar, RankBar } from "./HoneyHud";
+import { Overlay, MenuCard } from "./HoneyMenus";
+import { hydrateBest, useGameStore, type UpgradeId } from "@/game/store";
 
 type GameApi = typeof import("@/game/createGame");
-
-export const PLAY_URL = "https://honey-ace.grok.me";
-export const REPO_URL = "https://github.com/wilsonsamiano/honey-ace";
 
 export function HoneyAce() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -118,7 +107,7 @@ export function HoneyAce() {
   }
 
   return (
-    <div className="relative flex min-h-dvh flex-col items-center overflow-x-hidden bg-sky px-3 py-3 text-ink sm:px-5 sm:py-5">
+    <div className="relative flex min-h-dvh flex-col items-center overflow-x-hidden overflow-y-auto bg-sky px-3 py-3 text-ink sm:px-5 sm:py-5">
       <HeaderBar />
 
       {onTitle && (
@@ -189,28 +178,6 @@ export function HoneyAce() {
       <p className="mt-3 max-w-[390px] text-center text-sm text-muted md:max-w-[min(96vw,1080px)]">
         Phones stay tall. On a tablet, the sky opens wide — sit side by side, one finger each. Esc or P pauses.
       </p>
-    </div>
-  );
-}
-
-function HeaderBar() {
-  const best = useGameStore((s) => s.best);
-  return (
-    <div className="mb-3 flex w-full max-w-[390px] items-center justify-between gap-3 px-1 md:max-w-[min(96vw,1080px)]">
-      <div className="flex items-center gap-3">
-        <img
-          src="/mascot.png"
-          alt=""
-          className="bee-bob size-12 rounded-full bg-sky-deep object-cover ring-1 ring-line"
-        />
-        <div>
-          <p className="font-display text-xs font-semibold tracking-wide text-muted uppercase">
-            Cartoon squadron
-          </p>
-          <h1 className="font-display text-3xl leading-none font-semibold tracking-tight">Honey Ace</h1>
-        </div>
-      </div>
-      <p className="font-sans text-sm font-bold tabular-nums text-muted">Best {best}</p>
     </div>
   );
 }

@@ -1,12 +1,17 @@
 # Honey Ace
 
+**Play now → [honey-ace.grok.me](https://honey-ace.grok.me)**
+
 A cute TwinBee-style shoot ’em up. Fly Bumble, pick Easy / Normal / Hard, level firepower, hull, rockets, and call a Twin Bee.
 
 ## Play
 
-**[Play Honey Ace](https://honey-ace.grok.me)**
+Open **[https://honey-ace.grok.me](https://honey-ace.grok.me)** on a phone, tablet, or desktop.
 
-Open that link on a phone, tablet, or desktop. Touch or mouse to fly. Auto-fire. Esc or P pauses. Share your score from the game-over screen.
+- Touch or mouse to fly. Auto-fire.
+- Esc or P pauses.
+- Title screen: **Share** copies the play link ([honey-ace.grok.me](https://honey-ace.grok.me)). **GitHub** opens this repo.
+- Game over: share your score to X, Facebook, Instagram, TikTok, or text.
 
 ## Source
 
